@@ -38,8 +38,8 @@ export default function Register() {
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center">
-      <div ref={formRef} className="w-full max-w-lg bg-white/95 backdrop-blur-sm rounded-xl shadow-lg p-6">
-        <h2 className="text-2xl font-semibold mb-4">Create an account</h2>
+      <div ref={formRef} className="w-full max-w-lg bg-white text-black backdrop-blur-sm rounded-xl shadow-lg p-6">
+        <h2 className="text-2xl font-semibold mb-4 text-black">Create an account</h2>
         {error && <div className="bg-red-50 text-red-700 p-2 rounded mb-3">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -48,8 +48,8 @@ export default function Register() {
           <Input label="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
 
           <div>
-            <label className="block text-sm font-medium text-slate-700">Role</label>
-            <select value={role} onChange={e => setRole(e.target.value)} className="mt-1 w-full rounded-md border border-slate-200 px-3 py-2">
+            <label className="block text-sm font-medium text-black">Role</label>
+            <select value={role} onChange={e => setRole(e.target.value)} className="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-black">
               <option value="student">Student</option>
               <option value="professor">Professor</option>
             </select>

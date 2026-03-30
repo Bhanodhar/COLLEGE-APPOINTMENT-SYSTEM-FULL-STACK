@@ -42,18 +42,18 @@ export default function ProfessorAvailability() {
   }
 
   return (
-    <div ref={containerRef}>
-      <h2 className="text-xl font-semibold mb-4">Manage Availability</h2>
-      {message && <div className="mb-3 text-sm text-green-700">{message}</div>}
+    <div ref={containerRef} className="page-content" style={{ backgroundColor: '#ffffff !important', color: '#000000 !important', opacity: '1 !important', visibility: 'visible' }}>
+      <h2 className="text-xl font-semibold mb-4 text-gray-900" style={{ color: '#000000' }}>Manage Availability</h2>
+      {message && <div className="mb-3 text-sm text-green-700" style={{ color: '#000000', backgroundColor: '#f0fdf4', padding: '8px', borderRadius: '4px' }}>{message}</div>}
 
-      <form onSubmit={handleCreate} className="bg-white p-4 rounded shadow space-y-3">
+      <form onSubmit={handleCreate} className="bg-white p-4 rounded shadow space-y-3" style={{ color: '#000000' }}>
         <div>
-          <label className="block text-sm">Start Time</label>
-          <input type="datetime-local" value={startTime} onChange={e => setStartTime(e.target.value)} className="mt-1 w-full border px-3 py-2 rounded" required />
+          <label className="block text-sm text-gray-700 font-medium" style={{ color: '#000000' }}>Start Time</label>
+          <input type="datetime-local" value={startTime} onChange={e => setStartTime(e.target.value)} className="mt-1 w-full border px-3 py-2 rounded" required style={{ color: '#000000', backgroundColor: '#ffffff' }} />
         </div>
         <div>
-          <label className="block text-sm">End Time</label>
-          <input type="datetime-local" value={endTime} onChange={e => setEndTime(e.target.value)} className="mt-1 w-full border px-3 py-2 rounded" required />
+          <label className="block text-sm text-gray-700 font-medium" style={{ color: '#000000' }}>End Time</label>
+          <input type="datetime-local" value={endTime} onChange={e => setEndTime(e.target.value)} className="mt-1 w-full border px-3 py-2 rounded" required style={{ color: '#000000', backgroundColor: '#ffffff' }} />
         </div>
         <div className="text-right">
           <button className="px-3 py-1 bg-green-600 text-white rounded">Create</button>
@@ -61,12 +61,12 @@ export default function ProfessorAvailability() {
       </form>
 
       <div className="mt-6 space-y-3">
-        {slots.length === 0 && <div className="text-sm text-gray-600">No availability yet.</div>}
+        {slots.length === 0 && <div className="text-sm text-gray-700 font-medium" style={{ color: '#000000' }}>No availability yet.</div>}
         {slots.map(s => (
-          <div key={s._id} className="bg-white p-3 rounded shadow flex justify-between items-center">
+          <div key={s._id} className="bg-white p-3 rounded shadow flex justify-between items-center" style={{ color: '#000000' }}>
             <div>
-              <div className="font-medium">{new Date(s.startTime).toLocaleString()}</div>
-              <div className="text-sm text-gray-500">Ends {new Date(s.endTime).toLocaleTimeString()}</div>
+              <div className="font-medium text-gray-900" style={{ color: '#000000' }}>{new Date(s.startTime).toLocaleString()}</div>
+              <div className="text-sm text-gray-700" style={{ color: '#000000' }}>Ends {new Date(s.endTime).toLocaleTimeString()}</div>
             </div>
             <div>
               {!s.isBooked && <button onClick={() => handleDelete(s._id)} className="px-3 py-1 bg-red-500 text-white rounded">Delete</button>}

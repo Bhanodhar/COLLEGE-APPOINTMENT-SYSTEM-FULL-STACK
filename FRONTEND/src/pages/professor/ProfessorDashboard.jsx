@@ -111,27 +111,27 @@ export default function ProfessorDashboard() {
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">
-          Professor Dashboard
+      <div className="space-y-3">
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
+          👨‍🏫 Professor Dashboard
         </h1>
-        <p className="text-gray-600 mt-2">
-          Manage your appointments and availability
+        <p className="text-lg text-gray-700 font-medium">
+          Manage your appointments and availability slots
         </p>
       </div>
 
       {/* Stats Grid */}
       <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
-          <div key={index} className="card hover:shadow-xl transition-shadow duration-300">
+          <div key={index} className="card border-2 border-gray-200 hover:shadow-2xl transition-all duration-300 hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                <p className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</p>
-                <p className="text-sm text-gray-500 mt-1">{stat.description}</p>
+                <p className="text-sm font-bold text-gray-700">{stat.title}</p>
+                <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
+                <p className="text-sm text-gray-700 mt-1">{stat.description}</p>
               </div>
-              <div className={`${stat.color} p-3 rounded-lg`}>
-                <stat.icon className="h-6 w-6 text-white" />
+              <div className={`${stat.color} p-4 rounded-xl shadow-lg transform hover:scale-110 transition-transform`}>
+                <stat.icon className="h-7 w-7 text-white" />
               </div>
             </div>
           </div>
@@ -140,13 +140,18 @@ export default function ProfessorDashboard() {
 
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Upcoming Appointments */}
-        <div className="lg:col-span-2">
-          <div className="card">
+        <div className="lg:col-span-2 space-y-8">
+          <div className="card border-2 border-blue-100 bg-gradient-to-br from-blue-50 to-white">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Upcoming Appointments</h2>
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                <span className="bg-blue-100 p-2 rounded-lg mr-3">
+                  <CalendarDays className="h-6 w-6 text-blue-600" />
+                </span>
+                Upcoming Appointments
+              </h2>
               <Link 
                 to="/my-appointments" 
-                className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center"
+                className="text-blue-600 hover:text-blue-700 text-sm font-bold flex items-center bg-blue-50 px-3 py-2 rounded-lg transition-colors"
               >
                 View all
                 <ChevronRight className="h-4 w-4 ml-1" />
@@ -158,52 +163,55 @@ export default function ProfessorDashboard() {
                 {getUpcomingAppointments().map((appointment, index) => (
                   <div 
                     key={appointment._id}
-                    className="border border-gray-200 rounded-lg p-4 hover:border-primary-300 transition-colors duration-200"
+                    className="border-l-4 border-l-blue-500 bg-blue-50 rounded-xl p-5 hover:shadow-lg transition-all duration-200"
                   >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <CalendarDays className="h-4 w-4 text-gray-400" />
-                          <span className="font-medium text-gray-900">
-                            {getAppointmentDate(appointment.appointmentTime)}
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-3">
+                          <Clock className="h-5 w-5 text-blue-600" />
+                          <span className="font-bold text-gray-900">
+                            {getAppointmentDate(appointment.appointmentTime)} • {getAppointmentTime(appointment.appointmentTime)}
                           </span>
-                          <span className="text-gray-500">•</span>
-                          <span className="text-gray-600">{getAppointmentTime(appointment.appointmentTime)}</span>
                         </div>
-                        <p className="text-gray-700 mt-2">
-                          With <span className="font-semibold">{appointment.student?.name || 'Student'}</span>
+                        <p className="text-gray-900 font-bold text-lg">
+                          👨‍🎓 {appointment.student?.name || 'Student'}
                         </p>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-gray-700 mt-2">
                           Student ID: {appointment.student?.studentId || 'Not provided'}
                         </p>
                       </div>
-                      <span className="badge badge-success">Scheduled</span>
+                      <span className="badge badge-success flex-shrink-0">Scheduled</span>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No upcoming appointments</h3>
-                <p className="text-gray-600">You don't have any scheduled appointments yet</p>
+              <div className="text-center py-16 bg-white rounded-xl border-2 border-dashed border-gray-300">
+                <Calendar className="h-12 w-12 text-gray-500 mx-auto mb-4" />
+                <h3 className="text-lg font-bold text-gray-900 mb-2">No Upcoming Appointments</h3>
+                <p className="text-gray-700 font-medium">Check back later for student meetings</p>
               </div>
             )}
           </div>
 
           {/* Recent Activity */}
-          <div className="card mt-8">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">Recent Activity</h2>
+          <div className="card border-2 border-purple-100 bg-gradient-to-br from-purple-50 to-white">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+              <span className="bg-purple-100 p-2 rounded-lg mr-3">
+                <TrendingUp className="h-6 w-6 text-purple-600" />
+              </span>
+              Recent Activity
+            </h2>
             <div className="space-y-4">
-              <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-                <div className="bg-blue-100 p-2 rounded-lg">
-                  <UserCheck className="h-5 w-5 text-blue-600" />
+              <div className="flex items-center space-x-4 p-5 bg-green-50 rounded-xl border-l-4 border-l-green-500">
+                <div className="bg-green-100 p-3 rounded-lg flex-shrink-0">
+                  <UserCheck className="h-6 w-6 text-green-600" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium text-gray-900">No recent activity</p>
-                  <p className="text-sm text-gray-500">Your activity will appear here</p>
+                  <p className="font-bold text-gray-900">system Ready</p>
+                  <p className="text-sm text-gray-600">Your appointment system is configured and active</p>
                 </div>
-                <span className="text-sm text-gray-500">Just now</span>
+                <span className="text-xs font-bold text-gray-500">Now</span>
               </div>
             </div>
           </div>
@@ -212,89 +220,92 @@ export default function ProfessorDashboard() {
         {/* Quick Actions & Available Slots */}
         <div className="space-y-8">
           {/* Quick Actions */}
-          <div className="card">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">Quick Actions</h2>
-            <div className="space-y-4">
+          <div className="card border-2 border-orange-100 bg-gradient-to-br from-orange-50 to-white">
+            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+              <span className="bg-orange-100 p-2 rounded-lg mr-3">
+                <Plus className="h-5 w-5 text-orange-600" />
+              </span>
+              Quick Actions
+            </h2>
+            <div className="space-y-3">
               <Link
-                to="/availability"
-                className="flex items-center space-x-4 p-4 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors duration-200 group"
+                to="/professor/availability"
+                className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl hover:shadow-lg transition-all transform hover:scale-105 group text-white font-bold"
               >
-                <div className="bg-primary-100 group-hover:bg-primary-200 p-3 rounded-lg">
-                  <Plus className="h-5 w-5 text-primary-600" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-medium text-gray-900">Add Availability</h3>
-                  <p className="text-sm text-gray-600">Create new time slots</p>
-                </div>
-                <ChevronRight className="h-5 w-5 text-gray-400" />
+                <Plus className="h-5 w-5" />
+                <span>Add Availability</span>
+                <ChevronRight className="h-4 w-4 ml-auto" />
               </Link>
 
               <Link
-                to="/availability"
-                className="flex items-center space-x-4 p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200 group"
+                to="/professor/availability"
+                className="flex items-center space-x-3 p-4 bg-gradient-to-r from-green-500 to-green-600 rounded-xl hover:shadow-lg transition-all transform hover:scale-105 text-white font-bold"
               >
-                <div className="bg-green-100 group-hover:bg-green-200 p-3 rounded-lg">
-                  <Clock className="h-5 w-5 text-green-600" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-medium text-gray-900">Manage Availability</h3>
-                  <p className="text-sm text-gray-600">View all time slots</p>
-                </div>
-                <ChevronRight className="h-5 w-5 text-gray-400" />
+                <Clock className="h-5 w-5" />
+                <span>Manage Availability</span>
+                <ChevronRight className="h-4 w-4 ml-auto" />
               </Link>
 
               <Link
                 to="/my-appointments"
-                className="flex items-center space-x-4 p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200 group"
+                className="flex items-center space-x-3 p-4 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl hover:shadow-lg transition-all transform hover:scale-105 text-white font-bold"
               >
-                <div className="bg-blue-100 group-hover:bg-blue-200 p-3 rounded-lg">
-                  <Calendar className="h-5 w-5 text-blue-600" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-medium text-gray-900">View Appointments</h3>
-                  <p className="text-sm text-gray-600">All scheduled meetings</p>
-                </div>
-                <ChevronRight className="h-5 w-5 text-gray-400" />
+                <Calendar className="h-5 w-5" />
+                <span>View Appointments</span>
+                <ChevronRight className="h-4 w-4 ml-auto" />
               </Link>
             </div>
           </div>
 
           {/* Available Slots */}
-          <div className="card">
+          <div className="card border-2 border-green-100 bg-gradient-to-br from-green-50 to-white">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Available Slots</h2>
-              <span className="badge badge-info">
-                {getAvailableSlots().length} available
+              <h2 className="text-xl font-bold text-gray-900 flex items-center">
+                <span className="bg-green-100 p-2 rounded-lg mr-3">
+                  <Clock className="h-5 w-5 text-green-600" />
+                </span>
+                Available Slots
+              </h2>
+              <span className="badge badge-success font-bold text-lg px-4 py-2">
+                {getAvailableSlots().length}
               </span>
             </div>
             
             {getAvailableSlots().length > 0 ? (
               <div className="space-y-3">
                 {getAvailableSlots().slice(0, 3).map((slot) => (
-                  <div key={slot._id} className="border border-gray-200 rounded-lg p-3">
+                  <div key={slot._id} className="border-2 border-green-200 rounded-lg p-4 hover:bg-green-100 transition-colors">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-gray-900">
-                          {format(new Date(slot.startTime), 'MMM d')}
+                        <p className="font-bold text-gray-900">
+                          📅 {format(new Date(slot.startTime), 'MMM d, yyyy')}
                         </p>
-                        <p className="text-sm text-gray-600">
-                          {format(new Date(slot.startTime), 'h:mm a')} - {format(new Date(slot.endTime), 'h:mm a')}
+                        <p className="text-sm text-gray-700 mt-1 font-semibold">
+                          ⏰ {format(new Date(slot.startTime), 'h:mm a')} - {format(new Date(slot.endTime), 'h:mm a')}
                         </p>
                       </div>
-                      <Clock className="h-5 w-5 text-green-500" />
+                      <Clock className="h-6 w-6 text-green-600 flex-shrink-0" />
                     </div>
                   </div>
                 ))}
+                <div className="mt-4 pt-4 border-t-2 border-green-200">
+                  <Link 
+                    to="/professor/availability" 
+                    className="text-center block w-full py-2 text-green-600 font-bold hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
+                  >
+                    View All Available Slots →
+                  </Link>
+                </div>
               </div>
             ) : (
-              <div className="text-center py-6">
-                <AlertCircle className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-                <p className="text-gray-600">No available slots</p>
+              <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-green-300">
+                <AlertCircle className="h-8 w-8 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-700 font-semibold mb-4">No Available Slots</p>
                 <Link 
-                  to="/availability" 
-                  className="text-primary-600 hover:text-primary-700 text-sm font-medium mt-2 inline-block"
+                  to="/professor/availability" 
+                  className="inline-block bg-green-500 text-white font-bold px-6 py-2 rounded-lg hover:bg-green-600 transition-colors"
                 >
-                  Add availability
+                  Add Availability Now
                 </Link>
               </div>
             )}

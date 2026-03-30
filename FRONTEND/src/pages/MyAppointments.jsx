@@ -27,17 +27,6 @@ export default function MyAppointments() {
   const [dateFilter, setDateFilter] = useState('all')
   const containerRef = useRef(null)
 
-  useEffect(() => {
-    fetchAppointments()
-    if (containerRef.current) {
-      animatePageEnter(containerRef.current)
-    }
-  }, [])
-
-  useEffect(() => {
-    filterAppointments()
-  }, [appointments, searchTerm, statusFilter, dateFilter])
-
   const fetchAppointments = async () => {
     try {
       const endpoint = user.role === 'student' 
@@ -45,6 +34,7 @@ export default function MyAppointments() {
         : appointmentService.getProfessorAppointments
       
       const { data } = await endpoint()
+      console.log('Fetched appointments:', data.data) 
       setAppointments(data.data || [])
     } catch (error) {
       toast.error('Failed to fetch appointments')
@@ -52,6 +42,24 @@ export default function MyAppointments() {
       setLoading(false)
     }
   }
+
+  
+  useEffect(() => {
+    fetchAppointments()
+    if (containerRef.current) {
+      animatePageEnter(containerRef.current)
+    }
+  }, [])
+
+  if (!user) {
+    return <div className="p-8 text-center">Loading user session...</div>
+  }
+
+  useEffect(() => {
+    filterAppointments()
+  }, [appointments, searchTerm, statusFilter, dateFilter])
+
+  
 
   const filterAppointments = () => {
     let filtered = [...appointments]
@@ -155,48 +163,54 @@ export default function MyAppointments() {
   }
 
   return (
-    <div ref={containerRef} className="space-y-8">
+    <div ref={containerRef} className="page-content space-y-8"> 
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">
-          {user.role === 'student' ? 'My Appointments' : 'Student Appointments'}
+      <div className="space-y-3">
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
+          {user.role === 'student' ? '📅 My Appointments' : '👥 Student Appointments'}
         </h1>
-        <p className="text-gray-600 mt-2">
-          Manage and view all your scheduled appointments
+        <p className="text-lg text-gray-700 font-medium">
+          View and manage all your scheduled meetings
         </p>
       </div>
 
       {/* Filters */}
-      <div className="card">
+      <div className="card border-2 border-purple-100 bg-gradient-to-br from-purple-50 to-white">
+        <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+          <span className="bg-purple-100 p-2 rounded-lg mr-3">
+            <Filter className="h-5 w-5 text-purple-600" />
+          </span>
+          Filter Appointments
+        </h3>
         <div className="grid md:grid-cols-3 gap-6">
           {/* Search */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Search
+            <label className="block text-sm font-bold text-gray-900 mb-2">
+              🔍 Search
             </label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-600" />
               <input
                 type="text"
-                placeholder={`Search by ${user.role === 'student' ? 'professor' : 'student'} name or reason...`}
+                placeholder={`Search by ${user.role === 'student' ? 'professor' : 'student'} name...`}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="input-field pl-10"
+                className="input-field pl-10 border-2 border-purple-100 focus:border-purple-500 rounded-xl text-gray-900"
               />
             </div>
           </div>
 
           {/* Status Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Status
+            <label className="block text-sm font-bold text-gray-900 mb-2">
+              📋 Status
             </label>
             <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-600" />
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="input-field pl-10"
+                className="input-field pl-10 border-2 border-purple-100 focus:border-purple-500 rounded-xl text-gray-900"
               >
                 <option value="all">All Status</option>
                 <option value="scheduled">Scheduled</option>
@@ -208,15 +222,15 @@ export default function MyAppointments() {
 
           {/* Date Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Date
+            <label className="block text-sm font-bold text-gray-900 mb-2">
+              📆 Date
             </label>
             <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-600" />
               <select
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value)}
-                className="input-field pl-10"
+                className="input-field pl-10 border-2 border-purple-100 focus:border-purple-500 rounded-xl text-gray-900"
               >
                 <option value="all">All Dates</option>
                 <option value="upcoming">Upcoming</option>
@@ -229,91 +243,110 @@ export default function MyAppointments() {
       </div>
 
       {/* Appointments List */}
-      <div className="card">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">
+      <div className="card border-2 border-blue-100">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+            <span className="bg-blue-100 p-2 rounded-lg mr-3">
+              <Calendar className="h-6 w-6 text-blue-600" />
+            </span>
             {filteredAppointments.length} Appointment{filteredAppointments.length !== 1 ? 's' : ''}
           </h2>
-          <div className="text-sm text-gray-600">
+          <div className="text-sm font-semibold text-gray-700 bg-gray-100 px-4 py-2 rounded-lg">
             Showing {filteredAppointments.length} of {appointments.length}
           </div>
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-700 font-medium">Loading appointments...</p>
+            </div>
           </div>
         ) : filteredAppointments.length === 0 ? (
-          <div className="text-center py-12">
-            <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No appointments found</h3>
-            <p className="text-gray-600">
+          <div className="text-center py-16 bg-gradient-to-b from-gray-50 to-white rounded-xl border-2 border-dashed border-gray-300">
+            <div className="text-5xl mb-4">📭</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">No Appointments Found</h3>
+            <p className="text-gray-700 font-medium mb-6">
               {searchTerm || statusFilter !== 'all' || dateFilter !== 'all'
-                ? 'Try changing your search filters'
+                ? 'Try adjusting your search filters'
                 : user.role === 'student'
-                ? 'Book your first appointment with a professor'
+                ? 'Book your first appointment with a professor to get started'
                 : 'Your appointment schedule will appear here'}
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {filteredAppointments.map((appointment) => {
+          <div className="space-y-5">
+            {filteredAppointments.map((appointment, index) => {
               const otherPerson = getOtherPerson(appointment)
               const isCancellable = user.role === 'professor' && 
                 appointment.status === 'scheduled' && 
                 isFuture(new Date(appointment.appointmentTime))
+              
+              const statusColors = {
+                scheduled: 'border-l-4 border-l-blue-500 bg-blue-50 hover:bg-blue-100',
+                completed: 'border-l-4 border-l-green-500 bg-green-50 hover:bg-green-100',
+                cancelled: 'border-l-4 border-l-red-500 bg-red-50 hover:bg-red-100'
+              }
 
               return (
                 <div
                   key={appointment._id}
-                  className="border border-gray-200 rounded-lg p-6 hover:border-primary-300 transition-colors duration-200"
+                  className={`border-2 border-gray-200 rounded-xl p-6 transition-all duration-300 ${statusColors[appointment.status] || statusColors.scheduled}`}
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center space-x-4 mb-4">
-                        <div className="bg-primary-100 p-3 rounded-lg">
-                          <Calendar className="h-5 w-5 text-primary-600" />
+                        <div className={`p-3 rounded-lg ${
+                          appointment.status === 'scheduled' ? 'bg-blue-500' : 
+                          appointment.status === 'completed' ? 'bg-green-500' : 'bg-red-500'
+                        }`}>
+                          <Calendar className="h-6 w-6 text-white" />
                         </div>
                         <div className="flex-1">
-                          <div className="flex items-center justify-between">
+                          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                             <div>
-                              <h3 className="text-lg font-semibold text-gray-900">
+                              <h3 className="text-xl font-bold text-gray-900">
                                 {formatAppointmentTime(appointment.appointmentTime)}
                               </h3>
-                              <p className="text-gray-600 mt-1">
-                                With{' '}
-                                <span className="font-medium">
+                              <p className="text-gray-800 mt-2 font-semibold">
+                                {user.role === 'student' ? '👨‍🏫' : '👨‍🎓'} With{' '}
+                                <span className="text-blue-600">
                                   {otherPerson?.name || 'N/A'}
                                 </span>
                                 {otherPerson?.department && (
-                                  <span className="text-gray-500">
+                                  <span className="text-gray-700">
                                     {' '}• {otherPerson.department}
                                   </span>
                                 )}
                               </p>
                             </div>
-                            {getStatusBadge(appointment.status)}
+                            <div>
+                              {getStatusBadge(appointment.status)}
+                            </div>
                           </div>
 
                           {appointment.reason && (
-                            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                              <p className="text-gray-700">{appointment.reason}</p>
+                            <div className="mt-4 p-4 bg-white rounded-lg border-l-4 border-l-blue-400 shadow-sm">
+                              <p className="text-sm text-gray-700">
+                                <span className="font-bold text-blue-600">📝 Appointment Reason:</span> {appointment.reason}
+                              </p>
                             </div>
                           )}
 
                           {appointment.cancellationReason && (
-                            <div className="mt-4 p-4 bg-red-50 rounded-lg">
-                              <div className="flex items-start space-x-2">
-                                <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
-                                <div>
-                                  <p className="text-sm font-medium text-red-800">
-                                    Cancellation Reason
+                            <div className="mt-4 p-4 bg-red-100 rounded-lg border-l-4 border-l-red-600 shadow-sm">
+                              <div className="flex items-start space-x-3">
+                                <AlertCircle className="h-6 w-6 text-red-600 mt-0.5 flex-shrink-0" />
+                                <div className="flex-1">
+                                  <p className="text-sm font-bold text-red-800">
+                                    ⛔ Cancellation Reason
                                   </p>
-                                  <p className="text-sm text-red-600 mt-1">
+                                  <p className="text-sm text-red-700 mt-1">
                                     {appointment.cancellationReason}
                                   </p>
                                   {appointment.cancelledBy && (
-                                    <p className="text-xs text-red-500 mt-1">
+                                    <p className="text-xs text-red-600 mt-2 font-semibold">
                                       Cancelled by: {appointment.cancelledBy.name}
                                     </p>
                                   )}
@@ -334,9 +367,9 @@ export default function MyAppointments() {
                               handleCancelAppointment(appointment._id, reason)
                             }
                           }}
-                          className="btn-danger text-sm px-3 py-1"
+                          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg transition-all transform hover:scale-105 whitespace-nowrap"
                         >
-                          Cancel
+                          ✕ Cancel
                         </button>
                       </div>
                     )}
@@ -353,7 +386,7 @@ export default function MyAppointments() {
         <div className="card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total</p>
+              <p className="text-sm font-medium text-gray-700">Total</p>
               <p className="text-2xl font-bold text-gray-900 mt-2">{appointments.length}</p>
             </div>
             <div className="bg-blue-100 p-3 rounded-lg">
@@ -365,7 +398,7 @@ export default function MyAppointments() {
         <div className="card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Scheduled</p>
+              <p className="text-sm font-medium text-gray-700">Scheduled</p>
               <p className="text-2xl font-bold text-gray-900 mt-2">
                 {appointments.filter(a => a.status === 'scheduled').length}
               </p>
@@ -379,7 +412,7 @@ export default function MyAppointments() {
         <div className="card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Completed</p>
+              <p className="text-sm font-medium text-gray-700">Completed</p>
               <p className="text-2xl font-bold text-gray-900 mt-2">
                 {appointments.filter(a => a.status === 'completed').length}
               </p>
@@ -393,7 +426,7 @@ export default function MyAppointments() {
         <div className="card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Cancelled</p>
+              <p className="text-sm font-medium text-gray-700">Cancelled</p>
               <p className="text-2xl font-bold text-gray-900 mt-2">
                 {appointments.filter(a => a.status === 'cancelled').length}
               </p>

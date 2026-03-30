@@ -105,7 +105,7 @@ export default function StudentDashboard() {
         <h1 className="text-3xl font-bold text-gray-900">
           Student Dashboard
         </h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-gray-700 mt-2 font-medium">
           Manage your appointments and connect with professors
         </p>
       </div>
@@ -116,9 +116,9 @@ export default function StudentDashboard() {
           <div key={index} className="card hover:shadow-xl transition-shadow duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                <p className="text-sm font-medium text-gray-700">{stat.title}</p>
                 <p className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</p>
-                <p className="text-sm text-gray-500 mt-1">{stat.description}</p>
+                <p className="text-sm text-gray-700 mt-1">{stat.description}</p>
               </div>
               <div className={`${stat.color} p-3 rounded-lg`}>
                 <stat.icon className="h-6 w-6 text-white" />
@@ -153,17 +153,17 @@ export default function StudentDashboard() {
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="flex items-center space-x-2">
-                          <CalendarDays className="h-4 w-4 text-gray-400" />
+                          <CalendarDays className="h-4 w-4 text-gray-500" />
                           <span className="font-medium text-gray-900">
                             {getAppointmentDate(appointment.appointmentTime)}
                           </span>
-                          <span className="text-gray-500">•</span>
-                          <span className="text-gray-600">{getAppointmentTime(appointment.appointmentTime)}</span>
+                          <span className="text-gray-700">•</span>
+                          <span className="text-gray-800">{getAppointmentTime(appointment.appointmentTime)}</span>
                         </div>
                         <p className="text-gray-700 mt-2">
                           With <span className="font-semibold">{appointment.professor?.name || 'Professor'}</span>
                         </p>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-gray-700 mt-1 font-medium">
                           {appointment.professor?.department || 'Department not specified'}
                         </p>
                       </div>
@@ -200,9 +200,9 @@ export default function StudentDashboard() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-medium text-gray-900">Book Appointment</h3>
-                  <p className="text-sm text-gray-600">Schedule with professors</p>
+                  <p className="text-sm text-gray-700 font-medium">Schedule with professors</p>
                 </div>
-                <ChevronRight className="h-5 w-5 text-gray-400" />
+                <ChevronRight className="h-5 w-5 text-gray-600" />
               </Link>
 
               <Link
@@ -214,9 +214,9 @@ export default function StudentDashboard() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-medium text-gray-900">My Appointments</h3>
-                  <p className="text-sm text-gray-600">View all appointments</p>
+                  <p className="text-sm text-gray-700 font-medium">View all appointments</p>
                 </div>
-                <ChevronRight className="h-5 w-5 text-gray-400" />
+                <ChevronRight className="h-5 w-5 text-gray-600" />
               </Link>
 
               <Link
@@ -228,9 +228,9 @@ export default function StudentDashboard() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-medium text-gray-900">Browse Professors</h3>
-                  <p className="text-sm text-gray-600">Find professors</p>
+                  <p className="text-sm text-gray-700 font-medium">Find professors</p>
                 </div>
-                <ChevronRight className="h-5 w-5 text-gray-400" />
+                <ChevronRight className="h-5 w-5 text-gray-600" />
               </Link>
             </div>
           </div>

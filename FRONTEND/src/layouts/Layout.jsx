@@ -7,7 +7,7 @@ export default function Layout() {
   const { user } = useAuth()
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white text-slate-900">
       <Navbar />
       <div className="flex">
         {user && <Sidebar />}

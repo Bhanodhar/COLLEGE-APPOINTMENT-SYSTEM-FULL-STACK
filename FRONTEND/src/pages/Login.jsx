@@ -14,7 +14,11 @@ export default function Login() {
   const formRef = useRef()
 
   useEffect(() => {
-    gsap.from(formRef.current, { y: -10, opacity: 0, duration: 0.5 })
+    gsap.fromTo(
+      formRef.current,
+      { y: -10, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }
+    )
   }, [])
 
   const handleSubmit = async (e) => {
@@ -30,9 +34,13 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center">
-      <div ref={formRef} className="w-full max-w-md bg-white/95 backdrop-blur-sm rounded-xl shadow-lg p-6">
-        <h2 className="text-2xl font-semibold mb-4">Sign in to your account</h2>
+    <div className="min-h-[70vh] flex items-center justify-center" style={{ backgroundColor: '#fff', color: '#000' }}>
+      <div
+        ref={formRef}
+        className="w-full max-w-md bg-white text-black backdrop-blur-sm rounded-xl shadow-lg p-6 opacity-0"
+        style={{ backgroundColor: '#fff', color: '#000' }}
+      >
+        <h2 className="text-2xl font-semibold mb-4 text-black">Sign in to your account</h2>
         {error && <div className="bg-red-50 text-red-700 p-2 rounded mb-3">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-4">

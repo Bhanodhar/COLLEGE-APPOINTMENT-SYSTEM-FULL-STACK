@@ -45,24 +45,24 @@ export default function ProfessorList() {
   }
 
   return (
-    <div ref={containerRef}>
-      <h2 className="text-xl font-semibold mb-4">Find Professors</h2>
-      {message && <div className="mb-3 text-sm text-green-700">{message}</div>}
+    <div ref={containerRef} className="page-content" style={{ backgroundColor: '#ffffff !important', color: '#000000 !important', opacity: '1 !important', visibility: 'visible' }}>
+      <h2 className="text-xl font-semibold mb-4" style={{ color: '#000000' }}>Find Professors</h2>
+      {message && <div className="mb-3 text-sm text-green-700" style={{ color: '#000000', backgroundColor: '#f0fdf4', padding: '8px', borderRadius: '4px' }}>{message}</div>}
 
-      <div className="bg-white p-4 rounded shadow">
-        <p className="text-sm text-gray-600">If you need a professors list endpoint, add it to backend. For now you can book via professor profile link when available.</p>
+      <div className="bg-white p-4 rounded shadow" style={{ backgroundColor: '#ffffff', color: '#000000' }}>
+        <p className="text-sm text-gray-600" style={{ color: '#000000' }}>If you need a professors list endpoint, add it to backend. For now you can book via professor profile link when available.</p>
       </div>
 
       {selected && (
-        <div className="mt-6 bg-white p-4 rounded shadow">
-          <h3 className="font-medium">Availability for {selected.name}</h3>
+        <div className="mt-6 bg-white p-4 rounded shadow" style={{ backgroundColor: '#ffffff', color: '#000000' }}>
+          <h3 className="font-medium" style={{ color: '#000000' }}>Availability for {selected.name}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-            {slots.length === 0 && <div className="text-sm text-gray-600">No available slots</div>}
+            {slots.length === 0 && <div className="text-sm text-gray-600" style={{ color: '#000000' }}>No available slots</div>}
             {slots.map(slot => (
-              <div key={slot._id} className="p-3 border rounded flex justify-between items-center">
+              <div key={slot._id} className="p-3 border rounded flex justify-between items-center" style={{ backgroundColor: '#ffffff', color: '#000000' }}>
                 <div>
-                  <div className="font-medium">{new Date(slot.startTime).toLocaleString()}</div>
-                  <div className="text-sm text-gray-500">Ends: {new Date(slot.endTime).toLocaleTimeString()}</div>
+                  <div className="font-medium" style={{ color: '#000000' }}>{new Date(slot.startTime).toLocaleString()}</div>
+                  <div className="text-sm text-gray-500" style={{ color: '#000000' }}>Ends: {new Date(slot.endTime).toLocaleTimeString()}</div>
                 </div>
                 <div>
                   {slot.isBooked ? (

@@ -150,11 +150,11 @@ export default function Availability() {
   return (
     <div ref={formRef} className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Manage Availability</h1>
-          <p className="text-gray-600 mt-2">
-            Set your available time slots for student appointments
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="space-y-2">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900">⏰ Manage Availability</h1>
+          <p className="text-lg text-gray-600">
+            Define your availability slots for students to book appointments
           </p>
         </div>
         <button
@@ -162,37 +162,40 @@ export default function Availability() {
             setShowForm(true)
             setEditingSlot(null)
           }}
-          className="btn-primary flex items-center"
+          className="btn-primary flex items-center justify-center rounded-xl font-bold text-lg py-3 px-6 whitespace-nowrap transform hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={showForm}
         >
-          <Plus className="h-5 w-5 mr-2" />
+          <Plus className="h-6 w-6 mr-2" />
           Add Time Slot
         </button>
       </div>
 
       {/* Add/Edit Form */}
       {showForm && (
-        <div className="card animate-slide-down">
+        <div className="card border-2 border-blue-100 bg-gradient-to-br from-blue-50 to-white animate-slide-down">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">
-              {editingSlot ? 'Edit Time Slot' : 'Add New Time Slot'}
+            <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+              <span className="bg-blue-100 p-2 rounded-lg mr-3">
+                <Calendar className="h-6 w-6 text-blue-600" />
+              </span>
+              {editingSlot ? '✏️ Edit Time Slot' : '➕ Add New Time Slot'}
             </h2>
             <button
               onClick={() => {
                 setShowForm(false)
                 setEditingSlot(null)
               }}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-gray-600 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors"
             >
-              <X className="h-5 w-5" />
+              <X className="h-6 w-6" />
             </button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Start Date
+                <label className="block text-sm font-bold text-gray-900 mb-3">
+                  📅 Start Date
                 </label>
                 <input
                   type="date"
@@ -200,28 +203,28 @@ export default function Availability() {
                   value={formData.startDate}
                   onChange={handleInputChange}
                   min={format(new Date(), 'yyyy-MM-dd')}
-                  className="input-field"
+                  className="input-field border-2 border-blue-100 focus:border-blue-500 rounded-xl"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Start Time
+                <label className="block text-sm font-bold text-gray-900 mb-3">
+                  🕐 Start Time
                 </label>
                 <input
                   type="time"
                   name="startTime"
                   value={formData.startTime}
                   onChange={handleInputChange}
-                  className="input-field"
+                  className="input-field border-2 border-blue-100 focus:border-blue-500 rounded-xl"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  End Date
+                <label className="block text-sm font-bold text-gray-900 mb-3">
+                  📅 End Date
                 </label>
                 <input
                   type="date"
@@ -229,42 +232,42 @@ export default function Availability() {
                   value={formData.endDate}
                   onChange={handleInputChange}
                   min={formData.startDate}
-                  className="input-field"
+                  className="input-field border-2 border-blue-100 focus:border-blue-500 rounded-xl"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  End Time
+                <label className="block text-sm font-bold text-gray-900 mb-3">
+                  🕐 End Time
                 </label>
                 <input
                   type="time"
                   name="endTime"
                   value={formData.endTime}
                   onChange={handleInputChange}
-                  className="input-field"
+                  className="input-field border-2 border-blue-100 focus:border-blue-500 rounded-xl"
                   required
                 />
               </div>
             </div>
 
-            <div className="flex space-x-4">
+            <div className="flex gap-4">
               <button
                 type="button"
                 onClick={() => {
                   setShowForm(false)
                   setEditingSlot(null)
                 }}
-                className="btn-secondary flex-1"
+                className="flex-1 btn-secondary rounded-xl font-bold text-lg py-3 border-2 border-gray-300 hover:border-gray-400"
               >
-                Cancel
+                ❌ Cancel
               </button>
               <button
                 type="submit"
-                className="btn-primary flex-1"
+                className="flex-1 btn-primary rounded-xl font-bold text-lg py-3 transform hover:scale-105 transition-transform"
               >
-                {editingSlot ? 'Update Slot' : 'Add Slot'}
+                {editingSlot ? '💾 Update Slot' : '✅ Add Slot'}
               </button>
             </div>
           </form>
@@ -272,81 +275,91 @@ export default function Availability() {
       )}
 
       {/* Availability List */}
-      <div className="card">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Your Time Slots</h2>
-          <div className="text-sm text-gray-600">
-            {availability.length} total slots
+      <div className="card border-2 border-green-100">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+            <span className="bg-green-100 p-2 rounded-lg mr-3">
+              <Clock className="h-6 w-6 text-green-600" />
+            </span>
+            Your Time Slots
+          </h2>
+          <div className="text-sm font-bold text-gray-700 bg-gray-100 px-4 py-2 rounded-lg">
+            📊 Total: {availability.length} slots
           </div>
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-green-200 border-t-green-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading your availability...</p>
+            </div>
           </div>
         ) : availability.length === 0 ? (
-          <div className="text-center py-12">
-            <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Time Slots</h3>
-            <p className="text-gray-600 mb-6">Add your available time slots for students to book appointments</p>
+          <div className="text-center py-16 bg-gradient-to-b from-gray-50 to-white rounded-xl border-2 border-dashed border-gray-300">
+            <div className="text-5xl mb-4">📭</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">No Time Slots Yet</h3>
+            <p className="text-gray-600 mb-8">Create your first availability slot to accept student appointments</p>
             <button
               onClick={() => setShowForm(true)}
-              className="btn-primary inline-flex items-center"
+              className="btn-primary inline-flex items-center rounded-xl font-bold text-lg py-3 px-6"
             >
               <Plus className="h-5 w-5 mr-2" />
               Add Your First Slot
             </button>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-5">
             {availability.map((slot) => (
               <div
                 key={slot._id}
-                className="border border-gray-200 rounded-lg p-4 hover:border-primary-300 transition-colors duration-200"
+                className={`border-2 rounded-xl p-5 transition-all duration-300 ${
+                  slot.isBooked 
+                    ? 'border-green-500 bg-green-50 hover:bg-green-100' 
+                    : 'border-blue-200 bg-blue-50 hover:bg-blue-100'
+                }`}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center space-x-4 flex-1">
                     <div className={`p-3 rounded-lg ${
-                      slot.isBooked ? 'bg-green-100' : 'bg-blue-100'
+                      slot.isBooked ? 'bg-green-500' : 'bg-blue-500'
                     }`}>
-                      <Clock className={`h-5 w-5 ${
-                        slot.isBooked ? 'text-green-600' : 'text-blue-600'
-                      }`} />
+                      <Clock className="h-6 w-6 text-white" />
                     </div>
-                    <div>
-                      <div className="flex items-center space-x-3">
-                        <p className="font-medium text-gray-900">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <p className="font-bold text-gray-900 text-lg">
                           {formatSlotTime(slot)}
                         </p>
                         {getStatusBadge(slot)}
                       </div>
-                      <p className="text-sm text-gray-500 mt-1">
-                        Duration: {Math.round((new Date(slot.endTime) - new Date(slot.startTime)) / (1000 * 60))} minutes
+                      <p className="text-sm text-gray-700 font-semibold">
+                        ⏱️ Duration: {Math.round((new Date(slot.endTime) - new Date(slot.startTime)) / (1000 * 60))} minutes
                       </p>
                       {slot.bookedBy && (
-                        <p className="text-sm text-gray-600 mt-1">
-                          Booked by: {slot.bookedBy?.name || 'Student'}
+                        <p className="text-sm text-green-700 font-semibold mt-1">
+                          👨‍🎓 Booked by: {slot.bookedBy?.name || 'Student'}
                         </p>
                       )}
                     </div>
                   </div>
                   
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-3 flex-shrink-0">
                     {!slot.isBooked && (
                       <>
                         <button
                           onClick={() => handleEdit(slot)}
-                          className="p-2 text-gray-400 hover:text-primary-600 transition-colors"
+                          className="p-3 bg-blue-200 hover:bg-blue-300 text-blue-700 rounded-lg transition-colors transform hover:scale-110"
                           title="Edit"
                         >
-                          <Edit2 className="h-4 w-4" />
+                          <Edit2 className="h-5 w-5" />
                         </button>
                         <button
                           onClick={() => setDeleteConfirm(slot._id)}
-                          className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                          className="p-3 bg-red-200 hover:bg-red-300 text-red-700 rounded-lg transition-colors transform hover:scale-110"
                           title="Delete"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-5 w-5" />
                         </button>
                       </>
                     )}
@@ -355,28 +368,28 @@ export default function Availability() {
 
                 {/* Delete Confirmation */}
                 {deleteConfirm === slot._id && (
-                  <div className="mt-4 p-4 bg-red-50 rounded-lg">
+                  <div className="mt-5 p-4 bg-red-100 rounded-lg border-2 border-red-300">
                     <div className="flex items-start space-x-3">
-                      <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+                      <AlertCircle className="h-6 w-6 text-red-600 mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
-                        <p className="text-sm text-red-800 font-medium">
-                          Are you sure you want to delete this time slot?
+                        <p className="text-sm text-red-900 font-bold">
+                          ⚠️ Are you sure you want to delete this time slot?
                         </p>
-                        <p className="text-sm text-red-600 mt-1">
+                        <p className="text-sm text-red-700 mt-2">
                           This action cannot be undone.
                         </p>
-                        <div className="flex space-x-3 mt-3">
+                        <div className="flex space-x-4 mt-4">
                           <button
                             onClick={() => setDeleteConfirm(null)}
-                            className="text-sm text-gray-600 hover:text-gray-800"
+                            className="px-4 py-2 bg-white text-red-700 font-bold rounded-lg hover:bg-red-50 border-2 border-red-300"
                           >
-                            Cancel
+                            ❌ Cancel
                           </button>
                           <button
                             onClick={() => handleDelete(slot._id)}
-                            className="text-sm text-red-600 hover:text-red-800 font-medium"
+                            className="px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700"
                           >
-                            Delete Slot
+                            🗑️ Delete Slot
                           </button>
                         </div>
                       </div>
@@ -391,44 +404,44 @@ export default function Availability() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card">
+        <div className="card border-2 border-blue-100 bg-gradient-to-br from-blue-50 to-white hover:shadow-xl transition-all hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Available Slots</p>
-              <p className="text-2xl font-bold text-gray-900 mt-2">
+              <p className="text-sm font-bold text-gray-700">📊 Available Slots</p>
+              <p className="text-4xl font-bold text-blue-600 mt-2">
                 {availability.filter(slot => !slot.isBooked).length}
               </p>
             </div>
-            <div className="bg-green-100 p-3 rounded-lg">
-              <Clock className="h-6 w-6 text-green-600" />
+            <div className="bg-blue-500 p-4 rounded-xl shadow-lg">
+              <Clock className="h-7 w-7 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="card">
+        <div className="card border-2 border-green-100 bg-gradient-to-br from-green-50 to-white hover:shadow-xl transition-all hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Booked Slots</p>
-              <p className="text-2xl font-bold text-gray-900 mt-2">
+              <p className="text-sm font-bold text-gray-700">✅ Booked Slots</p>
+              <p className="text-4xl font-bold text-green-600 mt-2">
                 {availability.filter(slot => slot.isBooked).length}
               </p>
             </div>
-            <div className="bg-blue-100 p-3 rounded-lg">
-              <Calendar className="h-6 w-6 text-blue-600" />
+            <div className="bg-green-500 p-4 rounded-xl shadow-lg">
+              <Calendar className="h-7 w-7 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="card">
+        <div className="card border-2 border-purple-100 bg-gradient-to-br from-purple-50 to-white hover:shadow-xl transition-all hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Slots</p>
-              <p className="text-2xl font-bold text-gray-900 mt-2">
+              <p className="text-sm font-bold text-gray-700">📈 Total Slots</p>
+              <p className="text-4xl font-bold text-purple-600 mt-2">
                 {availability.length}
               </p>
             </div>
-            <div className="bg-purple-100 p-3 rounded-lg">
-              <Check className="h-6 w-6 text-purple-600" />
+            <div className="bg-purple-500 p-4 rounded-xl shadow-lg">
+              <Check className="h-7 w-7 text-white" />
             </div>
           </div>
         </div>

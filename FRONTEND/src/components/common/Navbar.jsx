@@ -45,6 +45,14 @@ export default function Navbar() {
                 >
                   Dashboard
                 </Link>
+                {/* Role Badge */}
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-bold ${
+                  user.role === 'student' 
+                    ? 'bg-blue-100 text-blue-800 border-2 border-blue-300' 
+                    : 'bg-purple-100 text-purple-800 border-2 border-purple-300'
+                }`}>
+                  {user.role === 'student' ? '👨‍🎓 Student' : '👨‍🏫 Professor'}
+                </span>
                 <Menu as="div" className="relative">
                   <Menu.Button className="flex items-center space-x-2 text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">
                     <User className="h-5 w-5" />
@@ -140,8 +148,15 @@ export default function Navbar() {
                   Dashboard
                 </Link>
                 <div className="px-3 py-2">
-                  <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                  <div className="text-sm text-gray-500">{user.email}</div>
+                  <div className="text-sm font-bold text-gray-900">{user.name}</div>
+                  <span className={`inline-flex items-center px-2 py-1 mt-1 rounded-full text-xs font-bold ${
+                    user.role === 'student' 
+                      ? 'bg-blue-100 text-blue-800 border border-blue-300' 
+                      : 'bg-purple-100 text-purple-800 border border-purple-300'
+                  }`}>
+                    {user.role === 'student' ? '👨‍🎓 Student' : '👨‍🏫 Professor'}
+                  </span>
+                  <div className="text-sm text-gray-500 mt-1">{user.email}</div>
                 </div>
                 <button
                   onClick={() => {

@@ -104,6 +104,25 @@ exports.getMe = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Get all professors
+ * @route   GET /api/auth/professors
+ * @access  Private
+ */
+exports.getProfessors = async (req, res, next) => {
+  try {
+    const professors = await User.find({ role: 'professor' }).select('name email department');
+    
+    res.status(200).json({
+      success: true,
+      count: professors.length,
+      data: professors
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Generate JWT Token
 const generateToken = (userId) => {
   return jwt.sign(

@@ -18,8 +18,19 @@ export default function NavBar() {
         <div className="flex items-center space-x-4">
           {user ? (
             <>
-              <span className="text-sm">{user.name} ({user.role})</span>
-              <button onClick={handleLogout} className="px-3 py-1 bg-red-500 text-white rounded">Logout</button>
+              <div className="flex items-center space-x-3">
+                <span className="px-3 py-1 bg-blue-100 text-blue-900 border-2 border-blue-500 rounded-full font-bold text-sm">
+                  👤 {user.name}
+                </span>
+                <span className={`px-3 py-1 border-2 rounded-full font-bold text-sm ${
+                  user.role === 'student' 
+                    ? 'bg-green-100 text-green-900 border-green-500' 
+                    : 'bg-purple-100 text-purple-900 border-purple-500'
+                }`}>
+                  {user.role === 'student' ? '👨‍🎓' : '👨‍🏫'} {user.role.toUpperCase()}
+                </span>
+              </div>
+              <button onClick={handleLogout} className="px-3 py-1 bg-red-500 text-white rounded font-semibold hover:bg-red-600">Logout</button>
             </>
           ) : (
             <>

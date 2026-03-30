@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { useGSAP } from '../../contexts/AnimationContext'
+import { useAnimation } from '../../contexts/AnimationContext'
 import { availabilityService, appointmentService } from '../../services'
-import { userService } from '../../services/userService'
+import { getAllProfessors } from '../../api/professors'
 import toast from 'react-hot-toast'
 import { 
   Search, 
@@ -12,13 +12,14 @@ import {
   GraduationCap,
   ChevronDown,
   Filter,
-  X
+  X,
+  CheckCircle
 } from 'lucide-react'
 import { format, parseISO, isAfter, isBefore } from 'date-fns'
 
 export default function BookAppointment() {
   const { user } = useAuth()
-  const { animatePageEnter } = useGSAP()
+  const { animatePageEnter } = useAnimation()
   const [professors, setProfessors] = useState([])
   const [selectedProfessor, setSelectedProfessor] = useState(null)
   const [availabilitySlots, setAvailabilitySlots] = useState([])
@@ -45,34 +46,18 @@ export default function BookAppointment() {
 
   const fetchProfessors = async () => {
     try {
-      // In a real app, you would have an API endpoint for this
-      // For now, we'll simulate by filtering users
-      const professorsData = [
-        {
-          _id: '1',
-          name: 'Dr. Smith',
-          email: 'smith@college.edu',
-          department: 'Computer Science',
-          role: 'professor'
-        },
-        {
-          _id: '2',
-          name: 'Dr. Johnson',
-          email: 'johnson@college.edu',
-          department: 'Mathematics',
-          role: 'professor'
-        },
-        {
-          _id: '3',
-          name: 'Dr. Williams',
-          email: 'williams@college.edu',
-          department: 'Physics',
-          role: 'professor'
-        }
-      ]
-      setProfessors(professorsData)
+      setLoading(true)
+      const { data } = await getAllProfessors()
+      console.log('Professors fetched:', data)
+      setProfessors(data.data || [])
+      if (!data.data || data.data.length === 0) {
+        toast('No professors found in the system', { icon: '⚠️' })
+      }
+      setLoading(false)
     } catch (error) {
-      toast.error('Failed to fetch professors')
+      console.error('Error fetching professors:', error.response?.data || error.message)
+      toast.error(error.response?.data?.message || 'Failed to fetch professors')
+      setLoading(false)
     }
   }
 
@@ -175,20 +160,25 @@ export default function BookAppointment() {
   }
 
   return (
-    <div ref={formRef} className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Book Appointment</h1>
-        <p className="text-gray-600 mt-2">
-          Schedule a meeting with professors based on their availability
+    <div ref={formRef} className="page-content">
+      <div className="space-y-8" >
+      <div className="space-y-3">
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900">📚 Book an Appointment</h1>
+        <p className="text-lg text-gray-700 font-medium">
+          Connect with accomplished professors and schedule a personalized meeting
         </p>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Professor Selection */}
         <div className="lg:col-span-1">
-          <div className="card sticky top-24">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Select Professor</h2>
+          <div className="card sticky top-24 border-2 border-blue-100">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+              <span className="bg-blue-100 p-2 rounded-lg mr-3">
+                <User className="h-5 w-5 text-blue-600" />
+              </span>
+              Select Professor
+            </h2>
             
             {/* Search */}
             <div className="mb-6">
@@ -199,50 +189,65 @@ export default function BookAppointment() {
                   placeholder="Search professors..."
                   value={searchTerm}
                   onChange={handleSearch}
-                  className="input-field pl-10"
+                  className="input-field pl-10 border-2 border-blue-100 focus:border-blue-500"
                 />
               </div>
             </div>
 
             {/* Professor List */}
             <div className="space-y-3 max-h-96 overflow-y-auto">
-              {professors.map((professor) => (
+              {loading && professors.length === 0 ? (
+                <div className="flex items-center justify-center h-48">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-200 border-t-blue-600 mx-auto mb-3"></div>
+                    <p className="text-gray-700 font-medium text-sm">Loading professors...</p>
+                  </div>
+                </div>
+              ) : professors.length === 0 ? (
+                <div className="text-center py-8 text-gray-600 font-medium">
+                  <p>No professors found</p>
+                </div>
+              ) : (
+                professors.map((professor) => (
                 <button
                   key={professor._id}
                   onClick={() => setSelectedProfessor(professor)}
-                  className={`w-full text-left p-4 rounded-lg border transition-all duration-200 ${
+                  className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
                     selectedProfessor?._id === professor._id
-                      ? 'border-primary-500 bg-primary-50'
-                      : 'border-gray-200 hover:border-primary-300 hover:bg-gray-50'
+                      ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-blue-100 shadow-md'
+                      : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
                   }`}
                 >
                   <div className="flex items-center space-x-3">
-                    <div className="bg-primary-100 p-2 rounded-full">
-                      <User className="h-5 w-5 text-primary-600" />
+                    <div className={`p-2.5 rounded-full ${selectedProfessor?._id === professor._id ? 'bg-blue-500' : 'bg-blue-100'}`}>
+                      <User className={`h-5 w-5 ${selectedProfessor?._id === professor._id ? 'text-white' : 'text-blue-600'}`} />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-medium text-gray-900">{professor.name}</h3>
-                      <p className="text-sm text-gray-600">{professor.department}</p>
+                      <h3 className="font-bold text-gray-900">{professor.name}</h3>
+                      <p className="text-sm text-gray-700 font-medium">{professor.department}</p>
                     </div>
                     {selectedProfessor?._id === professor._id && (
-                      <div className="w-2 h-2 bg-primary-600 rounded-full"></div>
+                      <div className="animate-pulse">
+                        <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
+                      </div>
                     )}
                   </div>
                 </button>
-              ))}
+              ))
+              )}
             </div>
 
             {/* Selected Professor Info */}
             {selectedProfessor && (
-              <div className="mt-6 pt-6 border-t">
-                <div className="bg-primary-50 rounded-lg p-4">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <GraduationCap className="h-5 w-5 text-primary-600" />
-                    <h3 className="font-semibold text-gray-900">Selected Professor</h3>
+              <div className="mt-6 pt-6 border-t-2 border-blue-100">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border-2 border-blue-200">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <span className="text-lg">👨‍🏫</span>
+                    <h3 className="font-bold text-gray-900">Professor Selected</h3>
                   </div>
-                  <p className="text-gray-900 font-medium">{selectedProfessor.name}</p>
-                  <p className="text-sm text-gray-600">{selectedProfessor.department}</p>
-                  <p className="text-sm text-gray-500 mt-1">{selectedProfessor.email}</p>
+                  <p className="text-gray-900 font-bold text-lg">{selectedProfessor.name}</p>
+                  <p className="text-sm text-gray-800 mt-1 font-semibold">{selectedProfessor.department}</p>
+                  <p className="text-sm text-gray-700 mt-2 font-medium">📧 {selectedProfessor.email}</p>
                 </div>
               </div>
             )}
@@ -251,12 +256,15 @@ export default function BookAppointment() {
 
         {/* Availability Slots */}
         <div className="lg:col-span-2">
-          <div className="card">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">
+          <div className="card border-2 border-green-100">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                <span className="bg-green-100 p-2 rounded-lg mr-3">
+                  <Calendar className="h-6 w-6 text-green-600" />
+                </span>
                 Available Time Slots
                 {selectedProfessor && (
-                  <span className="text-primary-600"> • {selectedProfessor.name}</span>
+                  <span className="text-green-600 ml-2">✓</span>
                 )}
               </h2>
               
@@ -265,7 +273,7 @@ export default function BookAppointment() {
                 <select
                   value={dateFilter}
                   onChange={(e) => handleDateFilter(e.target.value)}
-                  className="input-field py-1 text-sm"
+                  className="input-field py-2 text-sm border-2 border-green-100 focus:border-green-500"
                 >
                   <option value="all">All Dates</option>
                   <option value="today">Today</option>
@@ -277,47 +285,50 @@ export default function BookAppointment() {
 
             {loading ? (
               <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-4 border-green-200 border-t-green-600 mx-auto mb-4"></div>
+                  <p className="text-gray-700 font-medium">Loading available slots...</p>
+                </div>
               </div>
             ) : !selectedProfessor ? (
-              <div className="text-center py-12">
-                <User className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Select a Professor</h3>
-                <p className="text-gray-600">Choose a professor from the left panel to view their available time slots</p>
+              <div className="text-center py-16 bg-gradient-to-b from-gray-50 to-white rounded-xl border-2 border-dashed border-gray-300">
+                <div className="text-4xl mb-4">👈</div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Select a Professor First</h3>
+                <p className="text-gray-700 font-medium">Choose a professor from the left panel to see their available time slots</p>
               </div>
             ) : filteredSlots.length === 0 ? (
-              <div className="text-center py-12">
-                <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Available Slots</h3>
-                <p className="text-gray-600">This professor doesn't have any available time slots at the moment</p>
+              <div className="text-center py-16 bg-gradient-to-b from-orange-50 to-white rounded-xl border-2 border-dashed border-orange-300">
+                <div className="text-4xl mb-4">📭</div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">No Available Slots</h3>
+                <p className="text-gray-700 font-medium">Try selecting a different date or check back later!</p>
               </div>
             ) : (
               <div className="space-y-4">
-                {filteredSlots.map((slot) => (
+                {filteredSlots.map((slot, index) => (
                   <div
                     key={slot._id}
-                    className={`border rounded-lg p-4 cursor-pointer transition-all duration-200 ${
+                    className={`border-2 rounded-xl p-5 cursor-pointer transition-all duration-300 transform hover:scale-102 ${
                       selectedSlot?._id === slot._id
-                        ? 'border-primary-500 bg-primary-50'
-                        : 'border-gray-200 hover:border-primary-300 hover:bg-gray-50'
+                        ? 'border-green-500 bg-gradient-to-r from-green-50 to-green-100 shadow-lg'
+                        : 'border-gray-200 hover:border-green-300 hover:bg-green-50'
                     }`}
                     onClick={() => setSelectedSlot(slot)}
                   >
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="bg-green-100 p-2 rounded-lg">
-                          <Clock className="h-5 w-5 text-green-600" />
+                      <div className="flex items-center space-x-4 flex-1">
+                        <div className={`p-3 rounded-lg ${selectedSlot?._id === slot._id ? 'bg-green-500' : 'bg-green-100'}`}>
+                          <Clock className={`h-6 w-6 ${selectedSlot?._id === slot._id ? 'text-white' : 'text-green-600'}`} />
                         </div>
-                        <div>
-                          <p className="font-medium text-gray-900">{formatSlotTime(slot)}</p>
-                          <p className="text-sm text-gray-500 mt-1">
-                            Duration: {Math.round((new Date(slot.endTime) - new Date(slot.startTime)) / (1000 * 60))} minutes
+                        <div className="flex-1">
+                          <p className="font-bold text-gray-900 text-lg">{formatSlotTime(slot)}</p>
+                          <p className="text-sm text-gray-700 mt-1 font-medium">
+                            ⏱️ Duration: {Math.round((new Date(slot.endTime) - new Date(slot.startTime)) / (1000 * 60))} minutes
                           </p>
                         </div>
                       </div>
                       {selectedSlot?._id === slot._id && (
-                        <div className="bg-primary-600 text-white p-1 rounded-full">
-                          <X className="h-4 w-4" />
+                        <div className="bg-green-500 text-white p-2 rounded-full animate-pulse">
+                          <Calendar className="h-5 w-5" />
                         </div>
                       )}
                     </div>
@@ -328,48 +339,53 @@ export default function BookAppointment() {
 
             {/* Booking Form */}
             {selectedSlot && (
-              <div className="mt-8 pt-8 border-t">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm Appointment</h3>
+              <div className="mt-8 pt-8 border-t-2 border-green-100">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                  <span className="bg-green-100 p-2 rounded-lg mr-3">
+                    <CheckCircle className="h-6 w-6 text-green-600" />
+                  </span>
+                  Confirm Your Appointment
+                </h3>
                 
                 <div className="space-y-6">
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h4 className="font-medium text-gray-900 mb-2">Selected Time Slot</h4>
-                    <p className="text-gray-700">{formatSlotTime(selectedSlot)}</p>
-                    <p className="text-sm text-gray-500 mt-1">
-                      With: {selectedProfessor?.name}
+                  <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-5 border-2 border-green-200">
+                    <h4 className="font-bold text-gray-900 mb-3 text-lg">📅 Selected Time Slot</h4>
+                    <p className="text-gray-900 font-bold text-lg">{formatSlotTime(selectedSlot)}</p>
+                    <p className="text-gray-700 mt-2 font-semibold">
+                      👨‍🏫 With: {selectedProfessor?.name}
                     </p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Reason for Appointment
+                    <label className="block text-sm font-bold text-gray-900 mb-3">
+                      📝 Reason for Appointment
                     </label>
                     <textarea
                       value={bookingReason}
                       onChange={(e) => setBookingReason(e.target.value)}
-                      placeholder="Please provide a brief reason for this appointment..."
-                      rows={3}
-                      className="input-field"
+                      placeholder="Tell us why you'd like to meet with this professor..."
+                      rows={4}
+                      className="input-field border-2 border-blue-100 focus:border-blue-500 rounded-xl"
                     />
-                    <p className="text-sm text-gray-500 mt-2">
-                      This will help the professor prepare for your meeting
+                    <p className="text-sm text-gray-600 mt-2">
+                      💡 This helps the professor prepare a better meeting for you
                     </p>
                   </div>
 
-                  <div className="flex space-x-4">
+                  <div className="flex gap-4">
                     <button
                       onClick={() => {
                         setSelectedSlot(null)
                         setBookingReason('')
                       }}
-                      className="btn-secondary flex-1"
+                      className="flex-1 btn-secondary rounded-xl font-bold text-lg py-3 border-2 border-gray-300 hover:border-gray-400"
                     >
-                      Cancel
+                      ❌ Cancel
                     </button>
                     <button
                       onClick={handleBookAppointment}
                       disabled={loading || !bookingReason.trim()}
-                      className="btn-primary flex-1"
+                      className="flex-1 btn-primary rounded-xl font-bold text-lg py-3 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 transition-transform"
                     >
                       {loading ? (
                         <div className="flex items-center justify-center">
@@ -377,7 +393,7 @@ export default function BookAppointment() {
                           <span className="ml-2">Booking...</span>
                         </div>
                       ) : (
-                        'Confirm Booking'
+                        '✅ Confirm Booking'
                       )}
                     </button>
                   </div>
@@ -388,5 +404,5 @@ export default function BookAppointment() {
         </div>
       </div>
     </div>
-  )
-}
+  </div>
+)}
