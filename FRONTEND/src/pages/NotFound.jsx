@@ -1,16 +1,12 @@
 import { Link } from 'react-router-dom'
-import { useGSAP } from '../contexts/AnimationContext'
 import { useEffect, useRef } from 'react'
 import { AlertCircle, Home, ArrowLeft } from 'lucide-react'
 
 export default function NotFound() {
-  const { animatePageEnter } = useGSAP()
   const containerRef = useRef(null)
 
   useEffect(() => {
-    if (containerRef.current) {
-      animatePageEnter(containerRef.current)
-    }
+    // Page loaded successfully
   }, [])
 
   return (

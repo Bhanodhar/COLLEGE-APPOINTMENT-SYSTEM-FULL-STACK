@@ -1,12 +1,27 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { Navigate } from 'react-router-dom'
-import { AuthContext } from '../context/AuthContext'
+import { useAuth } from '../contexts/AuthContext'
 
+// This component protects routes - only logged-in users can access
 export default function ProtectedRoute({ children, role }) {
-  const { user, loading } = useContext(AuthContext)
+  const { user, loading } = useAuth()
 
-  if (loading) return null
-  if (!user) return <Navigate to="/login" replace />
-  if (role && user.role !== role) return <Navigate to="/" replace />
+  // While loading, show nothing
+  if (loading) {
+    return null
+  }
+
+  // If not logged in, redirect to login
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+
+  // If route requires specific role (professor), check it
+  if (role && user.role !== role) {
+    // User is logged in but doesn't have the required role
+    return <Navigate to="/" replace />
+  }
+
+  // User is logged in and authorized, show the page
   return children
 }

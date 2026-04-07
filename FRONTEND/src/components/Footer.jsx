@@ -1,3 +1,6 @@
+// Footer Component - Simple footer at bottom of page
+// Shows copyright year automatically
+
 import React from 'react'
 
 export default function Footer() {

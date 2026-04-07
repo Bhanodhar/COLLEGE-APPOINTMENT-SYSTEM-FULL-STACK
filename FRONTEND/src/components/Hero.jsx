@@ -1,3 +1,6 @@
+// Hero Component - Welcome banner on homepage for logged-out users
+// Shows project intro, sample professor availability, and call-to-action buttons
+
 import React, { useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import gsap from 'gsap'

@@ -1,79 +1,136 @@
+// ProfessorList Component - Browse professors and their availability
+// (Note: Backend doesn't have a public professor list endpoint, so this shows a placeholder)
+
 import React, { useEffect, useState, useRef } from 'react'
-import api from '../api/client'
-import { getProfessorAvailability } from '../api/availability'
-import { bookAppointment } from '../api/appointments'
-import gsap from 'gsap'
+import { availabilityService, appointmentService } from '../services'
+import toast from 'react-hot-toast'
 
 export default function ProfessorList() {
+  // State for professors, selected professor, availability slots, and messages
   const [professors, setProfessors] = useState([])
-  const [selected, setSelected] = useState(null)
-  const [slots, setSlots] = useState([])
-  const [message, setMessage] = useState(null)
+  const [selected, setSelected] = useState(null)       // Currently selected professor
+  const [slots, setSlots] = useState([])               // Their available slots
+  const [loading, setLoading] = useState(false)
   const containerRef = useRef()
 
+  // Load professors when component first appears
   useEffect(() => {
-    gsap.from(containerRef.current, { opacity: 0, y: 10, duration: 0.6 })
-    // fetch professors from backend: users with role professor
-    api.get('/auth')
-      .then(res => {
-        // backend doesn't expose a list route; attempt to fetch via /auth/me only
-        // fallback: ask backend to add a professor list if needed. For now assume no public list.
-        // We'll simulate by using professor from /auth/me if role professor.
-        setProfessors([])
-      })
+    loadProfessors()
   }, [])
 
-  const viewSlots = async (prof) => {
-    setSelected(prof)
+  // Try to fetch professors from backend
+  // Note: Backend doesn't have a /users/professors endpoint, so this is a placeholder
+  const loadProfessors = async () => {
     try {
-      const res = await getProfessorAvailability(prof._id)
-      setSlots(res.data.data)
+      setLoading(true)
+      // TODO: When backend adds /users/professors endpoint, uncomment this:
+      // const res = await userService.getProfessors()
+      // setProfessors(res.data.data || [])
+      toast.info('Backend feature: Add GET /users/professors endpoint', { icon: '💡' })
     } catch (err) {
-      setMessage(err.response?.data?.message || 'Failed to load slots')
+      toast.error('Failed to load professors')
+    } finally {
+      setLoading(false)
     }
   }
 
-  const handleBook = async (availabilityId) => {
+  // Fetch availability slots for a selected professor
+  const viewSlots = async (prof) => {
+    setSelected(prof)
     try {
-      const res = await bookAppointment({ availabilityId })
-      setMessage('Appointment booked')
-      // mark slot locally as booked
-      setSlots(prev => prev.map(s => s._id === availabilityId ? { ...s, isBooked: true } : s))
+      setLoading(true)
+      const res = await availabilityService.getProfessorAvailability(prof._id)
+      setSlots(res.data.data || [])
     } catch (err) {
-      setMessage(err.response?.data?.message || 'Booking failed')
+      toast.error('Failed to load availability slots')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Book an appointment for a selected slot
+  const handleBook = async (slotId) => {
+    try {
+      await appointmentService.book({ availabilitySlot: slotId })
+      toast.success('Appointment booked successfully!')
+      // Refresh the availability list
+      if (selected) {
+        viewSlots(selected)
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Booking failed')
     }
   }
 
   return (
-    <div ref={containerRef} className="page-content" style={{ backgroundColor: '#ffffff !important', color: '#000000 !important', opacity: '1 !important', visibility: 'visible' }}>
-      <h2 className="text-xl font-semibold mb-4" style={{ color: '#000000' }}>Find Professors</h2>
-      {message && <div className="mb-3 text-sm text-green-700" style={{ color: '#000000', backgroundColor: '#f0fdf4', padding: '8px', borderRadius: '4px' }}>{message}</div>}
+    <div ref={containerRef} className="page-content" style={{ backgroundColor: '#ffffff !important', color: '#000000 !important' }}>
+      <h2 className="text-2xl font-bold mb-6 text-gray-900">🎓 Find Professors</h2>
 
-      <div className="bg-white p-4 rounded shadow" style={{ backgroundColor: '#ffffff', color: '#000000' }}>
-        <p className="text-sm text-gray-600" style={{ color: '#000000' }}>If you need a professors list endpoint, add it to backend. For now you can book via professor profile link when available.</p>
+      {/* Placeholder message */}
+      <div className="bg-yellow-50 border-2 border-yellow-300 p-4 rounded-lg mb-6">
+        <p className="text-sm font-semibold text-gray-900">⚠️ Note: This page needs a backend endpoint</p>
+        <p className="text-sm text-gray-700">Backend needs to add: <code className="bg-gray-100 px-2 py-1 rounded">GET /users/professors</code></p>
+        <p className="text-sm text-gray-700 mt-2">Once added, professors will appear here and you can view their availability and book appointments.</p>
       </div>
 
+      {loading && (
+        <div className="text-center py-8 text-gray-600">Loading...</div>
+      )}
+
+      {!loading && professors.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-gray-600 font-medium mb-4">No professors available yet</p>
+          <p className="text-sm text-gray-500">Please contact an administrator to add professors to the system</p>
+        </div>
+      )}
+
+      {/* Grid of professors */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {professors.map(prof => (
+          <div key={prof._id} className="bg-white p-4 rounded-lg border-2 border-blue-200">
+            <div className="font-bold text-lg text-gray-900">👨‍🏫 {prof.name}</div>
+            <div className="text-sm text-gray-700 mt-1">📚 {prof.department}</div>
+            <div className="text-sm text-gray-700">📧 {prof.email}</div>
+            
+            <button 
+              onClick={() => viewSlots(prof)}
+              className="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+            >
+              View Availability
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Show availability slots when professor is selected */}
       {selected && (
-        <div className="mt-6 bg-white p-4 rounded shadow" style={{ backgroundColor: '#ffffff', color: '#000000' }}>
-          <h3 className="font-medium" style={{ color: '#000000' }}>Availability for {selected.name}</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-            {slots.length === 0 && <div className="text-sm text-gray-600" style={{ color: '#000000' }}>No available slots</div>}
-            {slots.map(slot => (
-              <div key={slot._id} className="p-3 border rounded flex justify-between items-center" style={{ backgroundColor: '#ffffff', color: '#000000' }}>
-                <div>
-                  <div className="font-medium" style={{ color: '#000000' }}>{new Date(slot.startTime).toLocaleString()}</div>
-                  <div className="text-sm text-gray-500" style={{ color: '#000000' }}>Ends: {new Date(slot.endTime).toLocaleTimeString()}</div>
-                </div>
-                <div>
+        <div className="mt-8 bg-green-50 border-2 border-green-300 p-6 rounded-lg">
+          <h3 className="text-xl font-bold text-gray-900 mb-4">⏰ Available Slots for {selected.name}</h3>
+          
+          {slots.length === 0 ? (
+            <p className="text-gray-700">No available slots at the moment</p>
+          ) : (
+            <div className="space-y-3">
+              {slots.map(slot => (
+                <div key={slot._id} className="bg-white p-3 rounded-lg flex justify-between items-center">
+                  <div>
+                    <div className="font-semibold text-gray-900">📅 {new Date(slot.startTime).toLocaleString()}</div>
+                    <div className="text-sm text-gray-700">Until {new Date(slot.endTime).toLocaleTimeString()}</div>
+                  </div>
                   {slot.isBooked ? (
-                    <span className="text-sm text-red-500">Booked</span>
+                    <span className="text-red-600 font-semibold">❌ Booked</span>
                   ) : (
-                    <button onClick={() => handleBook(slot._id)} className="px-3 py-1 bg-blue-600 text-white rounded">Book</button>
+                    <button 
+                      onClick={() => handleBook(slot._id)}
+                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold"
+                    >
+                      Book
+                    </button>
                   )}
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

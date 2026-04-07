@@ -1,11 +1,17 @@
+// Dashboard Component - Main page users see after logging in
+// Shows different menu options based on their role (student or professor)
+// Students see: Find Professors & Book, My Appointments
+// Professors see: Manage Availability, View Appointments
+
 import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { AuthContext } from '../context/AuthContext'
+import { AuthContext } from '../contexts/AuthContext'
 import Hero from '../components/Hero'
 import Footer from '../components/Footer'
 import { BookOpen, CheckSquare, Clock, Users, Calendar, FileText } from 'lucide-react'
 
 export default function Dashboard() {
+  // Get current user info from AuthContext
   const { user } = useContext(AuthContext)
 
   if (!user) {

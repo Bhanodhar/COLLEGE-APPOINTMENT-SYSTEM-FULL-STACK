@@ -1,6 +1,10 @@
+// NavBar Component - Navigation bar showing at top of every page
+// Displays user info and role when logged in
+// Shows Login/Register links when logged out
+
 import React, { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { AuthContext } from '../context/AuthContext'
+import { AuthContext } from '../contexts/AuthContext'
 
 export default function NavBar() {
   const { user, logout } = useContext(AuthContext)
