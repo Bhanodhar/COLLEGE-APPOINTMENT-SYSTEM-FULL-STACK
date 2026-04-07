@@ -15,8 +15,9 @@ This is a React + Vite application built for college appointment booking between
 
 ### `package.json`
 
-- Dependencies: React 18, React Router (navigation), Axios (HTTP), Tailwind CSS (styling), Lucide Icons, React Hot Toast (notifications)
+- Dependencies: React 18, React Router (navigation), Axios (HTTP), Tailwind CSS (styling), Lucide Icons, React Hot Toast (notifications), JWT decode
 - Scripts: `dev` (local development), `build` (production build), `preview` (test production build)
+- **Recent updates:** All dependencies properly configured for CORS, authentication, and routing
 
 ### `tailwind.config.cjs` & `postcss.config.cjs`
 
@@ -29,6 +30,7 @@ This is a React + Vite application built for college appointment booking between
 ### `index.html`
 
 - Main HTML file that loads React app
+- **Includes:** Proper favicon link to prevent 404 errors
 
 ---
 
@@ -115,7 +117,7 @@ This is a React + Vite application built for college appointment booking between
 
 - `create(slotData)` - Professor creates available time slot
 - `getProfessorAvailability(professorId)` - See professor's open slots
-- `getMyAvailability()` - Professor sees own created slots
+- `getMyAvailability()` - Professor sees own created slots (calls `/availability/my-availability`)
 - `deleteSlot(slotId)` - Delete/cancel availability slot
 
 #### `userService.js`
@@ -123,7 +125,7 @@ This is a React + Vite application built for college appointment booking between
 **Purpose:** Get list of professors  
 **Methods:**
 
-- `getProfessors()` - List all professors
+- `getProfessors()` - List all professors (calls `/auth/professors`)
 - `getProfessor(professorId)` - Get specific professor details
 
 #### `index.js`
@@ -215,10 +217,10 @@ This is a React + Vite application built for college appointment booking between
 **Purpose:** Main page for students to book appointments with professors  
 **Layout:** 3-column design:
 
-- **Left:** Professor search/list
-- **Middle:** Professor's available time slots
+- **Left:** Professor search/list (fetched from `/auth/professors`)
+- **Middle:** Professor's available time slots (fetched from `/availability/professor/:id`)
 - **Right:** Booking form requesting appointment reason
-  **Flow:** Select professor → See available times → Select slot → Enter reason → Book
+  **Flow:** Select professor → See available times → Select slot → Enter reason → Book (sends `availabilityId` to `/appointments/book`)
 
 ---
 
@@ -261,8 +263,8 @@ These were removed for being unused or redundant:
 
 ## 🔄 Authentication Flow
 
-1. **New User:** Clicks Register → Fills form with email/password/role/details → Account created, token saved
-2. **Returning User:** Clicks Login → Enters email/password → Token saved to localStorage
+1. **New User:** Clicks Register → Fills form with email/password/role/details → Account created, token saved → **Redirected to Login page**
+2. **Returning User:** Clicks Login → Enters email/password → Token saved to localStorage → **Redirected to Dashboard**
 3. **Every Page Load:** AuthContext checks if token exists and is valid, redirects to login if not
 4. **Every API Request:** `api.js` automatically adds bearer token to request header
 5. **Session Expiry:** If backend returns 401, user redirected to login
@@ -328,12 +330,49 @@ Creates optimized `/dist` folder ready for deployment
 
 3. **Open Browser:** Go to http://localhost:5173
 
-4. **Register & Login:** Create account with role (student/professor)
+4. **Setup Users:**
+   - **Register Professors First:** Go to `/register` → Select "Professor" role → Fill details → Register
+   - **Register Students:** Go to `/register` → Select "Student" role → Fill details → Register
 
-5. **Use App:**
-   - Students: Browse professors and book appointments
-   - Professors: Create availability slots and see bookings
+5. **Professor Setup:**
+   - Login as professor → Go to "Manage Availability" → Create time slots for students to book
+
+6. **Student Usage:**
+   - Login as student → Go to "Book Appointment" → Select professor → Choose available slot → Enter reason → Book
+
+7. **View Appointments:**
+   - **Students:** "My Appointments" shows booked slots
+   - **Professors:** "My Appointments" shows student bookings, "Manage Availability" shows created slots
 
 ---
 
 **All code has been rewritten with beginner-friendly comments explaining each section!** 🎉
+
+---
+
+## 🔧 Recent Fixes & Improvements
+
+### **Authentication Flow Corrections:**
+
+- **Registration redirect:** Now redirects to login page after successful registration (instead of dashboard)
+- **API response handling:** Fixed AuthContext to properly destructure login/register responses
+- **CORS configuration:** Updated backend to allow local development origins (localhost:3000, 5173, 127.0.0.1)
+- **React Router:** Added future flags for v7 compatibility (`v7_startTransition`, `v7_relativeSplatPath`)
+
+### **API Endpoint Corrections:**
+
+- **Professor list:** Fixed `userService.getProfessors()` to call `/auth/professors` (was `/users/professors`)
+- **Availability slots:** Fixed `availabilityService.getMyAvailability()` to call `/availability/my-availability`
+- **Booking parameters:** Fixed appointment booking to send `availabilityId` (was `availabilitySlot`)
+
+### **Component Fixes:**
+
+- **JavaScript errors:** Removed undefined `animatePageEnter` function calls causing blank pages
+- **Favicon:** Added proper favicon link to prevent 404 errors
+- **Error handling:** Improved API error handling and user feedback
+
+### **Build & Performance:**
+
+- **Successful builds:** All changes compile successfully with Vite
+- **Code quality:** Maintained clean, beginner-friendly code structure
+- **Testing:** Verified all authentication flows and API integrations work correctly
