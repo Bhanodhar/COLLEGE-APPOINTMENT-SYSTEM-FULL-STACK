@@ -97,8 +97,7 @@ export default function BookAppointment() {
       setLoading(true)
       // Send booking request to backend
       const appointmentData = {
-        availabilitySlot: selectedSlot._id,
-        appointmentTime: selectedSlot.startTime,
+        availabilityId: selectedSlot._id,
         reason: bookingReason
       }
       

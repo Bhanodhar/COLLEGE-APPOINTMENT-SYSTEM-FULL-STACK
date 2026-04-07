@@ -1,6 +1,6 @@
 import api from './api'
 
 export const userService = {
-  getProfessors: () => api.get('/users/professors'),
+  getProfessors: () => api.get('/auth/professors'),
   getProfessor: (id) => api.get(`/users/${id}`),
 }
