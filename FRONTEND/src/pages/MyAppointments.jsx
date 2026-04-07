@@ -23,9 +23,6 @@ export default function MyAppointments() {
   // Load appointments when component first appears
   useEffect(() => {
     loadAppointments()
-    if (containerRef.current) {
-      animatePageEnter(containerRef.current)
-    }
   }, [])
 
   // Re-filter appointments whenever filters change

@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
     try {
       // Send login request
       const response = await api.post('/auth/login', { email, password })
-      const { token, user: userData } = response.data.data
+      const { token, data: userData } = response.data
       
       // Save token to localStorage
       localStorage.setItem('token', token)
@@ -88,7 +88,7 @@ export const AuthProvider = ({ children }) => {
     try {
       // Send registration request
       const response = await api.post('/auth/register', userData)
-      const { token, user: newUser } = response.data.data
+      const { token, data: newUser } = response.data
       
       // Save token to localStorage
       localStorage.setItem('token', token)

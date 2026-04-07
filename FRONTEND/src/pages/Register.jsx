@@ -44,8 +44,8 @@ export default function Register() {
       const result = await register(payload)
 
       if (result.success) {
-        // Registration successful - redirect to dashboard
-        navigate('/')
+        // Registration successful - redirect to login page
+        navigate('/login')
       } else {
         setError(result.error || 'Registration failed')
       }

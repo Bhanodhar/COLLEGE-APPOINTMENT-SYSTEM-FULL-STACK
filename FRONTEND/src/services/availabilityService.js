@@ -9,7 +9,7 @@ export const availabilityService = {
   getProfessorAvailability: (professorId) => api.get(`/availability/professor/${professorId}`),
   
   // Get current professor's own availability slots
-  getMyAvailability: () => api.get('/availability/my-slots'),
+  getMyAvailability: () => api.get('/availability/my-availability'),
   
   // Delete an availability slot
   deleteSlot: (slotId) => api.delete(`/availability/${slotId}`),
